@@ -1,0 +1,47 @@
+.sidebar {
+  width: 208px;
+  
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  width: 208px;
+  height: 47px;
+  background-color: #d1bdf1;
+}
+
+.bot-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 35%;
+  margin-left: 5px;
+  
+
+}
+
+.sidebar-title {
+  font-weight: bold;
+  flex: 1;
+  color: #000;
+  margin-left: 20px;
+}
+
+.edit-icon {
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.past-btn {
+  margin: 10px;
+  width: 175px;
+  height: 39px;
+  background-color: #d1bdf1;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}

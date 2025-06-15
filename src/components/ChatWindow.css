@@ -1,0 +1,32 @@
+
+.chat-window {
+  max-height: 0px;
+  overflow-y: auto;
+  background-color: #f9f7fc;
+  border-radius: 10px;
+  
+  margin: 1rem 0;
+}
+
+.message {
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.message.user {
+  background-color: #dfe7fd;
+  text-align: right;
+  width: 200px;
+}
+
+.message.bot {
+  background-color: #e4d4fc;
+  text-align: left;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: gray;
+  margin-top: 4px;
+}
