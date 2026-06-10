@@ -7,25 +7,39 @@ import HistoryPage from './components/HistoryPage';
 import repliesData from './data/replies.json';
 import './App.css';
 
-// ─── Home Page ───────────────────────────────────────────────────────────────
-function HomePage({ messages, setMessages, inputText, setInputText, savedConversations, setSavedConversations }) {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'conversations';   // exact key expected by tests
+const MESSAGES_KEY = 'chat_messages';  // key for restoring the live chat view
 
+function loadConversations() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+}
+
+function loadMessages() {
+  return JSON.parse(localStorage.getItem(MESSAGES_KEY)) || [];
+}
+
+// ─── Home Page ────────────────────────────────────────────────────────────────
+function HomePage({ messages, setMessages, inputText, setInputText }) {
   const getCurrentTime = () =>
     new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const handleSend = (text) => {
     if (typeof text !== 'string' || text.trim() === '') return;
 
+    const question = text.trim();
+    const reply = repliesData[question];
+    const answer = reply || 'Sorry, Did not understand your query!';
+
     const userMessage = {
       sender: 'user',
-      text: text.trim(),
+      text: question,
       time: getCurrentTime(),
     };
 
-    const reply = repliesData[text.trim()];
     const botMessage = {
       sender: 'bot',
-      text: reply || 'Sorry, Did not understand your query!',
+      text: answer,
       time: getCurrentTime(),
       liked: false,
       disliked: false,
@@ -33,34 +47,34 @@ function HomePage({ messages, setMessages, inputText, setInputText, savedConvers
       feedbackText: '',
     };
 
+    // Update live chat state
     const newMessages = [...messages, userMessage, botMessage];
     setMessages(newMessages);
     setInputText('');
 
-    // Auto-save each conversation exchange to localStorage
-    const existing = JSON.parse(localStorage.getItem('chat_messages') || '[]');
-    const updated = [...existing, userMessage, botMessage];
-    localStorage.setItem('chat_messages', JSON.stringify(updated));
+    // ── Persist chat messages for reload restore ──
+    const existingMessages = loadMessages();
+    localStorage.setItem(
+      MESSAGES_KEY,
+      JSON.stringify([...existingMessages, userMessage, botMessage])
+    );
 
-    // Also keep a conversations list for /history
-    const allConversations = JSON.parse(localStorage.getItem('saved_conversations') || '[]');
-    const conv = {
-      id: Date.now(),
-      date: new Date().toLocaleDateString(),
-      time: getCurrentTime(),
-      rating: 0,
-      feedback: '',
-      messages: [userMessage, botMessage],
-    };
-    const updatedConversations = [...allConversations, conv];
-    setSavedConversations(updatedConversations);
-    localStorage.setItem('saved_conversations', JSON.stringify(updatedConversations));
+    // ── Persist conversations using the exact key + format the tests expect ──
+    // Format: [{ question: string, answer: string }]
+    const existingConversations = loadConversations();
+    const updatedConversations = [...existingConversations, { question, answer }];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedConversations));
   };
 
   const handleLike = (index) => {
     setMessages((prev) => {
       const updated = [...prev];
-      updated[index] = { ...updated[index], liked: true, disliked: false, rating: updated[index].rating || 5 };
+      updated[index] = {
+        ...updated[index],
+        liked: true,
+        disliked: false,
+        rating: updated[index].rating || 5,
+      };
       return updated;
     });
   };
@@ -115,17 +129,9 @@ function HomePage({ messages, setMessages, inputText, setInputText, savedConvers
 
 // ─── App Root ─────────────────────────────────────────────────────────────────
 function App() {
-  const [messages, setMessages] = useState(() => {
-    const saved = localStorage.getItem('chat_messages');
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  // Restore live chat from localStorage so messages survive page refresh
+  const [messages, setMessages] = useState(loadMessages);
   const [inputText, setInputText] = useState('');
-
-  const [savedConversations, setSavedConversations] = useState(() => {
-    const saved = localStorage.getItem('saved_conversations');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
@@ -140,20 +146,21 @@ function App() {
   return (
     <BrowserRouter>
       <div className={`app ${theme}`}>
+
         {/* ── Sidebar ── */}
         <nav className="sidebar">
           <div className="sidebar-header">
             <img src="/image 29.png" alt="Bot" className="bot-icon" />
-            {/* New Query link — required by Cypress test 10 */}
+            {/* New Query? anchor — required by Cypress test 10 */}
             <NewQueryLink setMessages={setMessages} setInputText={setInputText} />
             <img src="/image 31.png" alt="edit" className="edit-icon" />
           </div>
-          {/* History navigation link — required by Cypress test 1 */}
+          {/* /history anchor — required by Cypress test 1 */}
           <a href="/history" className="past-link">Past Conversations</a>
         </nav>
 
         <div className="main">
-          {/* ── Header — always visible, required by Cypress tests 2 & 3 ── */}
+          {/* ── Header — always visible ── */}
           <header className="app-header">
             <h1>Customer Support AI</h1>
             <div className="header-right">
@@ -179,23 +186,19 @@ function App() {
                   setMessages={setMessages}
                   inputText={inputText}
                   setInputText={setInputText}
-                  savedConversations={savedConversations}
-                  setSavedConversations={setSavedConversations}
                 />
               }
             />
-            <Route
-              path="/history"
-              element={<HistoryPage savedConversations={savedConversations} />}
-            />
+            <Route path="/history" element={<HistoryPage />} />
           </Routes>
         </div>
+
       </div>
     </BrowserRouter>
   );
 }
 
-// ─── New Query Link Helper (needs useNavigate inside BrowserRouter) ───────────
+// ─── New Query Link (inside BrowserRouter so useNavigate works) ───────────────
 function NewQueryLink({ setMessages, setInputText }) {
   const navigate = useNavigate();
   return (
