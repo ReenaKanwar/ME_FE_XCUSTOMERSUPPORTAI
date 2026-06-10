@@ -8,7 +8,7 @@ import './App.css';
 
 function App() {
   const [messages, setMessages] = useState([]);
-  const [inputFocused, setInputFocused] = useState(false);
+  const [ setInputFocused] = useState(false);
   const [inputText, setInputText] = useState('');
   
   // Custom router state
