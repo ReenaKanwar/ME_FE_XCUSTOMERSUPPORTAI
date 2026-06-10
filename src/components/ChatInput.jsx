@@ -2,19 +2,24 @@ import React from 'react';
 import './ChatInput.css'; 
 
 function ChatInput({ inputText, setInputText, handleSend, handleSave, setInputFocused }) {
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (inputText.trim() === '') return;
+    handleSend(inputText);
+  };
+
   return (
-    <div className="chat-input">
+    <form className="chat-input"  onSubmit={onSubmit}>
       <input
         type="text"
-        placeholder="Type your message..."
+        placeholder="Please tell me about your query!"
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
         onFocus={() => setInputFocused(true)}
-        onKeyDown={(e) => e.key === 'Enter' && handleSend(inputText)}
       />
-      <button onClick={() => handleSend(inputText)}>Ask</button>
-      <button onClick={handleSave}>Save</button>
-    </div>
+      <button type="submit" className="ask-btn">Ask</button>
+      <button type="button" className="save-btn" onClick={handleSave}>Save</button>
+    </form>
   );
 }
 

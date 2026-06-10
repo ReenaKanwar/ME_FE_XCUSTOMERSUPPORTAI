@@ -1,47 +1,128 @@
 .sidebar {
   width: 208px;
-  
   height: 100vh;
   display: flex;
   flex-direction: column;
-  
+  background-color: white;
+  color: #000;
+  border-right: 1px solid #e0e0e0;
+  position: sticky;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
-  width: 208px;
-  height: 47px;
-  background-color: #d1bdf1;
+  width: 100%;
+  height: 60px;
+  background-color: #FAF9FF;
+  border-bottom: 1px solid #e8e5f2;
+}
+
+.new-query-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 10px;
+  cursor: pointer;
 }
 
 .bot-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 35%;
-  margin-left: 5px;
-  
-
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
 }
 
-.sidebar-title {
-  font-weight: bold;
+.new-query-btn {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+  text-align: left;
   flex: 1;
-  color: #000;
-  margin-left: 20px;
 }
 
 .edit-icon {
+  width: 16px;
+  height: 16px;
   cursor: pointer;
-  margin-right: 8px;
 }
 
 .past-btn {
-  margin: 10px;
-  width: 175px;
-  height: 39px;
+  margin: 20px 10px;
+  height: 40px;
   background-color: #d1bdf1;
+  color: #3f3356;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.past-btn:hover {
+  background-color: #bfaee3;
+}
+
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 150;
+}
+
+/* Responsive Overrides */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    left: -208px;
+    
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+  
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+  }
+}
+
+/* Dark Mode Overrides */
+.app.dark .sidebar {
+  background-color: #1a1625;
+  border-right-color: #2b253b;
+  color: #fff;
+}
+
+.app.dark .sidebar-header {
+  background-color: #211b30;
+  border-bottom-color: #2b253b;
+}
+
+.app.dark .new-query-btn {
+  color: #e2dcf0;
+}
+
+.app.dark .past-btn {
+  background-color: #4c3f6b;
+  color: #e2dcf0;
+}
+
+.app.dark .past-btn:hover {
+  background-color: #5d4e82;
 }
