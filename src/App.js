@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate,Link } from 'react-router-dom';
 import ChatWindow from './components/ChatWindow';
 import ChatInput from './components/ChatInput';
 import SuggestionCards from './components/SuggestionCards';
@@ -156,7 +156,7 @@ function App() {
             <img src="/image 31.png" alt="edit" className="edit-icon" />
           </div>
           {/* /history anchor — required by Cypress test 1 */}
-          <a href="/history" className="past-link">Past Conversations</a>
+          <Link to="/history" className="past-link">Past Conversations</Link>
         </nav>
 
         <div className="main">
@@ -200,20 +200,17 @@ function App() {
 
 // ─── New Query Link (inside BrowserRouter so useNavigate works) ───────────────
 function NewQueryLink({ setMessages, setInputText }) {
-  const navigate = useNavigate();
   return (
-    <a
-      href="/"
+    <Link
+      to="/"
       className="new-query-btn"
-      onClick={(e) => {
-        e.preventDefault();
+      onClick={() => {
         setMessages([]);
         setInputText('');
-        navigate('/');
       }}
     >
       New Query?
-    </a>
+    </Link>
   );
 }
 
