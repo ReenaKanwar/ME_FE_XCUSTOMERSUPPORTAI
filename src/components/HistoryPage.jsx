@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './HistoryPage.css';
 
-// Read directly from localStorage so this page always has up-to-date data
-// even after a full-page reload or direct navigation to /history.
-// Expected format: [{ question: string, answer: string }]
 function HistoryPage() {
-  const conversations = JSON.parse(localStorage.getItem('conversations')) || [];
+  const [conversations, setConversations] = useState([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('conversations');
+      if (stored) {
+        setConversations(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error('Failed to parse conversations from localStorage', e);
+    }
+  }, []);
 
   return (
     <div className="history-view">
-      {/* Always visible — not conditional — required by Cypress test */}
       <h2 className="history-heading">Past Conversations</h2>
 
       <div className="history-conversations">
@@ -18,11 +25,11 @@ function HistoryPage() {
           conversations.map((chat, index) => (
             <div key={index} className="history-chat-pair">
               <div className="history-question">
-                <span className="history-label">You</span>
+                <span className="history-label">You:</span>
                 <p>{chat.question}</p>
               </div>
               <div className="history-answer">
-                <span className="history-label">Customer Support AI</span>
+                <span className="history-label">Customer Support AI:</span>
                 <p>{chat.answer}</p>
               </div>
             </div>
